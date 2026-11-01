@@ -1,0 +1,3 @@
+# pnpm reads overrides from here. npm reads "overrides" in package.json.
+overrides:
+  "@acme/theme": "^2.0.0"

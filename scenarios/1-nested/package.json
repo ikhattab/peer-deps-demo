@@ -1,0 +1,11 @@
+{
+  "name": "scenario-1-nested",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@acme/theme": "^2.0.0",
+    "@acme/ui": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
