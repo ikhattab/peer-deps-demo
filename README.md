@@ -3,6 +3,9 @@
 What happens when two copies of a library end up in one app, and how
 `peerDependencies` prevents that.
 
+This is the demo for the post
+[What peerDependencies Actually Protect You From](https://ihabkhattab.com/blog/what-peerdependencies-actually-protect-you-from/).
+
 ## The packages
 
 - **`@acme/theme`**: `ThemeProvider` and `useTheme()`, built on a React context
