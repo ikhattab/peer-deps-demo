@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: ./run.sh <scenario>   e.g. ./run.sh 1-nested   (no argument = all four)
+# Usage: ./run.sh <scenario>   e.g. ./run.sh 1-nested   (no argument = all of them)
 # Starts the local @acme registry, then for each scenario: a fresh install,
 # the installed tree, and the app's output.
 set -uo pipefail

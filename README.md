@@ -30,7 +30,7 @@ side loaded.
 ## Run it
 
 ```sh
-./run.sh            # all six scenarios
+./run.sh            # all seven scenarios
 ./run.sh 1-nested   # just one
 ```
 
@@ -49,14 +49,33 @@ Needs Node 18+ and npm 7+. `run.sh` packs the packages into `tarballs/` and star
 | `4-peer-ok` | v2 (peer `^1`) | `@acme/theme@^1` | One copy, `<button class="dark">` |
 | `5-peer-star` | v3 (peer `*`) | `@acme/theme@^2` | **Installs cleanly**, one copy, `npm ls` exits 0, then `<button class="[object Object]">` |
 | `6-override` | v1 (dependency `^1`) | `@acme/theme@^2`, plus `"overrides": { "@acme/theme": "$@acme/theme" }` | One copy (`deduped`), but `@acme/ui` runs on v2: `<button class="[object Object]">` |
+| `7-peer-star-app-v1` | v3 (peer `*`) | `@acme/theme@^1` | One copy (`deduped`), `<button class="dark">` |
 
 Scenarios 1 and 3 are the same mismatch. With a regular dependency it fails
 silently at runtime. With a peer it fails loudly at install time. Scenario 5
 is that peer with the check turned off: one copy, but the breaking major goes
 in without a word. Scenario 6 is scenario 1 with an override: it removes the
-second copy, but it can't make `@acme/ui` v1 work with v2.
+second copy, but it can't make `@acme/ui` v1 work with v2. Scenario 7 is
+scenario 5 on the version the button was written for: it works, but the range
+didn't check that.
+
+## The six cases in the post
+
+The post's "All Six Cases" figure crosses how `@acme/ui` lists `@acme/theme` with
+what the app asks for. Each case is one scenario:
+
+| `@acme/ui` lists it as | App asks for `^1.0.0` | App asks for `^2.0.0` |
+|---|---|---|
+| `dependencies: "^1.0.0"` | `2-deduped` | `1-nested` |
+| `peerDependencies: "^1.0.0"` | `4-peer-ok` | `3-peer-conflict` |
+| `peerDependencies: "*"` | `7-peer-star-app-v1` | `5-peer-star` |
+
+`6-override` isn't in the figure. The post covers it in its own section.
 
 ## Also worth trying
+
+These need the registry running. Run `./pack.sh` once, start `node registry.mjs`
+in another terminal, and work inside a scenario's folder.
 
 - **How scenario 1 happens in real life.** Start from an app that only has
   `@acme/ui@^1`, then run `npm install @acme/theme`. npm writes
@@ -67,11 +86,19 @@ second copy, but it can't make `@acme/ui` v1 work with v2.
   `<button class="[object Object]">`.
 - **Peers on the root project.** If the app lists `@acme/theme` under
   `peerDependencies` instead of `dependencies`, npm 7+ installs it anyway.
+- **An override on scenario 3.** Add
+  `"overrides": { "@acme/theme": "$@acme/theme" }` to its `package.json`. The
+  `ERESOLVE` goes away, `npm ls` exits 0 without marking anything `invalid`, and
+  the button renders `<button class="[object Object]">`.
+- **`npm dedupe` and `npm find-dupes` on scenario 1.** After an install, `npm dedupe`
+  reports "up to date" and leaves both copies, because no version satisfies both
+  `^1.0.0` and `^2.0.0`. `npm find-dupes` doesn't list them either. `pnpm dedupe`
+  also leaves both.
 
 ## pnpm
 
 Checked with pnpm 12 (`pnpm install` and `pnpm why @acme/theme` in each scenario,
-with the registry running). Scenarios 1, 2 and 4 match npm, including the two
+with the registry running). Scenarios 1, 2, 4 and 7 match npm, including the two
 copies in scenario 1. The difference is scenario 3: pnpm **does not fail**. It
 prints `Issues with peer dependencies found` and installs v2 out of range, which
 is what npm does with `--legacy-peer-deps`. `pnpm peers check` shows the
