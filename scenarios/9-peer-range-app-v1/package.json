@@ -1,0 +1,11 @@
+{
+  "name": "scenario-9-peer-range-app-v1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@acme/theme": "^1.0.0",
+    "@acme/ui": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
