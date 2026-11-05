@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 command rm -rf tarballs && mkdir tarballs
-for pkg in theme-v1 theme-v2 ui-v1 ui-v2 ui-v3; do
+for pkg in theme-v1 theme-v2 ui-v1 ui-v2 ui-v3 ui-v4; do
   (cd "packages/$pkg" && npm pack --silent --pack-destination ../../tarballs >/dev/null)
 done
 ls tarballs

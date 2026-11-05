@@ -13,10 +13,12 @@ This is the demo for the post
   - **v1**: `useTheme()` returns a string.
   - **v2** is a breaking release: `useTheme()` returns an object, `{ theme }`.
 - **`@acme/ui`**: a component library built on `@acme/theme`. Its `Button`
-  sets `className={useTheme()}`, so it only works with v1.
+  sets `className={useTheme()}`, so v1 to v3 only work with theme v1.
   - **v1** lists `@acme/theme@^1.0.0` in `dependencies`. It brings its own copy.
   - **v2** lists `@acme/theme@^1.0.0` in `peerDependencies`. It uses the app's copy.
   - **v3** has the same code, with the peer range changed to `"*"`.
+  - **v4** fixes the button to handle both majors and lists the peer range
+    `"^1.0.0 || ^2.0.0"`.
 
 Every scenario runs the same app:
 
@@ -33,7 +35,7 @@ side loaded.
 ## Run it
 
 ```sh
-./run.sh            # all seven scenarios
+./run.sh            # all eight scenarios
 ./run.sh 1-nested   # just one
 ```
 
@@ -53,6 +55,7 @@ Needs Node 18+ and npm 7+. `run.sh` packs the packages into `tarballs/` and star
 | `5-peer-star` | v3 (peer `*`) | `@acme/theme@^2` | **Installs cleanly**, one copy, `npm ls` exits 0, then `<button class="[object Object]">` |
 | `6-override` | v1 (dependency `^1`) | `@acme/theme@^2`, plus `"overrides": { "@acme/theme": "$@acme/theme" }` | One copy (`deduped`), but `@acme/ui` runs on v2: `<button class="[object Object]">` |
 | `7-peer-star-app-v1` | v3 (peer `*`) | `@acme/theme@^1` | One copy (`deduped`), `<button class="dark">` |
+| `8-peer-range` | v4 (peer `^1 \|\| ^2`) | `@acme/theme@^2` | One copy (`deduped`), `<button class="dark">`. The range was tested, so the check means something |
 
 Scenarios 1 and 3 are the same mismatch. With a regular dependency it fails
 silently at runtime. With a peer it fails loudly at install time. Scenario 5
@@ -60,7 +63,8 @@ is that peer with the check turned off: one copy, but the breaking major goes
 in without a word. Scenario 6 is scenario 1 with an override: it removes the
 second copy, but it can't make `@acme/ui` v1 work with v2. Scenario 7 is
 scenario 5 on the version the button was written for: it works, but the range
-didn't check that.
+didn't check that. Scenario 8 is the fix the post ends on: the library
+supports both majors and says so in its range.
 
 ## The six cases in the post
 
@@ -73,7 +77,7 @@ what the app asks for. Each case is one scenario:
 | `peerDependencies: "^1.0.0"` | `4-peer-ok` | `3-peer-conflict` |
 | `peerDependencies: "*"` | `7-peer-star-app-v1` | `5-peer-star` |
 
-`6-override` isn't in the figure. The post covers it in its own section.
+`6-override` and `8-peer-range` aren't in the figure. The post covers each in its own section.
 
 ## Also worth trying
 
@@ -108,6 +112,7 @@ is what npm does with `--legacy-peer-deps`. `pnpm peers check` shows the
 mismatch, and `--config.strict-peer-dependencies=true` turns it into an install
 error (`ERR_PNPM_PEER_DEP_ISSUES`). `pnpm add @acme/theme` writes `^2.0.0` just
 like npm, and root `peerDependencies` get installed. Scenario 5 (`"*"`) gives
-`No peer dependency issues found`, even with strict mode on. Scenario 6 has a
+`No peer dependency issues found`, even with strict mode on, and so does
+scenario 8. Scenario 6 has a
 `pnpm-workspace.yaml` with the same override, since pnpm 12 reads overrides
 from there and ignores a `"pnpm"` field in `package.json` (with a warning).
