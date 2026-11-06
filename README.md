@@ -53,7 +53,7 @@ Needs Node 18+ and npm 7+. `run.sh` packs the packages into `tarballs/` and star
 | `3-peer-conflict` | v2 (peer `^1`) | `@acme/theme@^2` | **Install fails** with `ERESOLVE` |
 | `4-peer-ok` | v2 (peer `^1`) | `@acme/theme@^1` | One copy, `<button class="dark">` |
 | `5-peer-star` | v3 (peer `*`) | `@acme/theme@^2` | **Installs cleanly**, one copy, `npm ls` exits 0, then `<button class="[object Object]">` |
-| `6-override` | v1 (dependency `^1`) | `@acme/theme@^2`, plus `"overrides": { "@acme/theme": "$@acme/theme" }` | One copy (`deduped`), but `@acme/ui` runs on v2: `<button class="[object Object]">` |
+| `6-override` | v1 (dependency `^1`) | `@acme/theme@^2`, plus `"overrides": { "@acme/theme": "^2.0.0" }` | One copy (`deduped`), but `@acme/ui` runs on v2: `<button class="[object Object]">` |
 | `7-peer-star-app-v1` | v3 (peer `*`) | `@acme/theme@^1` | One copy (`deduped`), `<button class="dark">` |
 | `8-peer-range` | v4 (peer `^1 \|\| ^2`) | `@acme/theme@^2` | One copy (`deduped`), `<button class="dark">`. The range was tested, so the check means something |
 | `9-peer-range-app-v1` | v4 (peer `^1 \|\| ^2`) | `@acme/theme@^1` | One copy (`deduped`), `<button class="dark">` |
@@ -97,7 +97,7 @@ in another terminal, and work inside a scenario's folder.
 - **Peers on the root project.** If the app lists `@acme/theme` under
   `peerDependencies` instead of `dependencies`, npm 7+ installs it anyway.
 - **An override on scenario 3.** Add
-  `"overrides": { "@acme/theme": "$@acme/theme" }` to its `package.json`. The
+  `"overrides": { "@acme/theme": "^2.0.0" }` to its `package.json`. The
   `ERESOLVE` goes away, `npm ls` exits 0 without marking anything `invalid`, and
   the button renders `<button class="[object Object]">`.
 - **`npm dedupe` and `npm find-dupes` on scenario 1.** After an install, `npm dedupe`
